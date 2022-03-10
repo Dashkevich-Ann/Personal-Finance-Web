@@ -1,0 +1,39 @@
+﻿@using PersonalFinance
+
+<div class="container">
+    <div class="row">
+        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col logo_section">
+            <div class="full">
+                <div class="center-desk">
+                    <div class="logo"> <a asp-controller="Home" asp-action="Index"><img src="/images/logo.jpg" alt="Logo"></a> </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10">
+            <div class="menu-area">
+                <div class="limit-box">
+                    <nav class="main-menu">
+                        <ul class="menu-area-main">
+                            <li> <a class="@Html.IsActive("Home", "Index", "nav-link")" asp-controller="Home" asp-action="Index">Home</a> </li>
+                            @if (User.IsInRole("User"))
+                            {
+                                <li>
+                                    <a class="@Html.IsActive("MyFinance", "Index", "nav-link")" asp-controller="MyFinance" asp-action="Index">My finance</a>
+                                </li>
+                            }
+                            <li> <a href="aboutus.html">About</a> </li>
+                            <li> <a href="contact.html">Contact us</a> </li>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li>
+                                    <a class="@Html.IsActive("Admin", "Index", "nav-link")" asp-controller="Admin" asp-action="Index">Admin</a>
+                                </li>
+                            }
+                            @await Html.PartialAsync("_LoginPartial")
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

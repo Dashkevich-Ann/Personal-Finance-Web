@@ -1,0 +1,22 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = "_Layout";
+}
+<div class="row">
+    <div class="category-wrap col-md-3">
+        <ul>
+            <li><a class="@Html.IsActive("MyFinance", "Index")" asp-action="Index" asp-controller="MyFinance">Costs and incomes</a></li>
+            <li><a href="">Categories</a></li>
+            <li><a href="">Statistics</a></li>
+            <li><a href="">Reports</a></li>
+        </ul>
+    </div>
+    <div class="col-md-9">
+        @RenderBody()
+    </div>
+</div>
+@section Scripts {
+    @RenderSection("Scripts", required: false);
+}

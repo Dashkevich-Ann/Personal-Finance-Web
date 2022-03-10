@@ -1,0 +1,61 @@
+﻿@model BusinessLayer.Models.UserDTO
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>@Model.Name</h1>
+<hr />
+<div>
+
+    <dl class="row">
+        <dt class="col-sm-3">
+            <strong>First name</strong>
+        </dt>
+        <dd class="col-sm-9">
+            <span>@Model.FirstName</span>
+        </dd>
+        <dt class="col-sm-3">
+            <strong>Last name</strong>
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.LastName)
+        </dd>
+        <dt class="col-sm-3">
+            <strong>@Html.DisplayNameFor(model => model.Email)</strong>
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+        <dt class="col-sm-3">
+            <strong>@Html.DisplayNameFor(model => model.Login)</strong>
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Login)
+        </dd>
+        <dt class="col-sm-3">
+            <strong>Role(s)</strong>
+        </dt>
+        <dd class="col-sm-9">
+            @string.Join(", ", Model.UserRoles.Select(x => x.Name))
+        </dd>
+        <dt class="col-sm-3">
+            <strong>Date of birth</strong>
+        </dt>
+        <dd class="col-sm-9">
+            @if (Model.DateOfBirth.HasValue) 
+            {
+                @Model.DateOfBirth.Value.ToString("dd.MM.yyyy")
+            }
+        </dd>
+    </dl>
+</div>
+<div>
+    <a class="btn btn-primary popup" data-url=@string.Format("/Admin/EditUser/{0}", Model.UserId) data-toggle="modal"
+       data-target="#modal-edit-user">Edit</a>
+
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</div>
+<partial name="_ModalPartial" model="@string.Format("modal-edit-user")"/>
+@section Scripts{
+    <script src="~/js/user.js" asp-append-version="true"></script>
+}

@@ -1,0 +1,30 @@
+﻿@model PersonalFinance.Models.LoginModel
+@{
+    ViewData["Title"] = "Login";
+
+    var returnUrl = ViewData["ReturnUrl"] as string;
+    returnUrl = System.Net.WebUtility.UrlEncode(returnUrl);
+    var action = $"/login?returnUrl={returnUrl}";
+}
+
+
+<h1>Login</h1>
+
+<div class="row mt-3">
+    <div class="col-4">
+        <form action="@action" method="post" asp-antiforgery="true">
+            <div class="validation" asp-validation-summary="ModelOnly"></div>
+            <div class="form-group">
+                <label asp-for="Login">User Login</label>
+                <input type="text" class="form-control" name="login" asp-for="Login" placeholder="Enter login">
+                <span asp-validation-for="Login"></span>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" name="password" placeholder="Enter password">
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+    </div>
+    <div class="col-12">If you don't have account, you can <a asp-controller="Account" asp-action="Register">register.</a></div>
+</div>
