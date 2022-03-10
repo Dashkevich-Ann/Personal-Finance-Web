@@ -31,5 +31,16 @@ namespace PersonalFinance.Controllers
 
             return await _transactionService.GetAllTransactionList(user.UserId);
         }
+
+        [HttpDelete]
+        [Route("{transactionId:int}/type/{type}")]
+        public async Task<ServiceResult> Delete(int transactionId, TransactionType type)
+        {
+            var user = await _authService.GetLoggedInUser(User);
+
+            var result = await _transactionService.DeleteTransaction(transactionId, user.UserId, type);
+
+            return result;
+        }
     }
 }

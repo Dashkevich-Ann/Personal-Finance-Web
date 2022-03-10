@@ -7,22 +7,22 @@
 
 <div class="transaction-wrapper row">
     @*<div class="transaction-filters row">
-        <div class="picker col-md-5">
-            <div class="control-wrap">
-                <label class="col-form-label">
-                    Date from:
-                </label>
-                <input class="form-control form-control-sm" type="date" name="dateFrom" id="dateFrom" />
-            </div>
-            <div class="control-wrap">
-                <label class="col-form-label">
-                    Date to:
-                </label>
-                <input class="form-control form-control-sm" type="date" name="dateTo" id="dateTo" />
+            <div class="picker col-md-5">
+                <div class="control-wrap">
+                    <label class="col-form-label">
+                        Date from:
+                    </label>
+                    <input class="form-control form-control-sm" type="date" name="dateFrom" id="dateFrom" />
+                </div>
+                <div class="control-wrap">
+                    <label class="col-form-label">
+                        Date to:
+                    </label>
+                    <input class="form-control form-control-sm" type="date" name="dateTo" id="dateTo" />
 
+                </div>
             </div>
-        </div>
-    </div>*@
+        </div>*@
     <div class="col-md-12 transaction-grid">
         <table class="table" id="transactionTable">
             <thead>
@@ -45,12 +45,15 @@
             </tfoot>
         </table>
         <div class="btn-toolbar justify-content-start" id="transactionBtnGroup">
-            <button class="btn btn-danger" id="delete-button">Delete</button>
+            <button class="btn btn-primary" id="add-button" data-modal="new-transaction-modal">Add</button>
+            <button class="btn btn-danger" id="delete-button" data-modal="confirm-removal-modal">Delete</button>
         </div>
     </div>
 </div>
 
-<partial name="_ModalPartial" model="@string.Format("confirm-removal")"/>
+<partial name="_ModalPartial" model="@string.Format("confirm-removal-modal")" />
+<partial name="_ModalPartial" model="@string.Format("new-transaction-modal")" />
+
 
 @section Scripts{
     <script src="~/js/transactionGrid.js" asp-append-version="true"></script>
