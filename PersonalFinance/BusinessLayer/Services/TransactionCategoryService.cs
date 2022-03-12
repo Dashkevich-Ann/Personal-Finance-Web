@@ -6,6 +6,7 @@ using DataLayer.Repository;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,12 +17,14 @@ namespace BusinessLayer.Services
     {
         private readonly IRepository<CostCategory> _costCategoryRepository;
         private readonly IRepository<IncomeCategory> _incomeCategoryRepository;
+        private readonly ITransactionService _transactionService;
         private readonly DbContext _dbContext;
 
-        public TransactionCategoryService(IRepository<CostCategory> costCategoryRepository, IRepository<IncomeCategory> incomeCategoryrepository, DbContext dbContext)
+        public TransactionCategoryService(IRepository<CostCategory> costCategoryRepository, IRepository<IncomeCategory> incomeCategoryrepository, DbContext dbContext, ITransactionService transactionService)
         {
             _costCategoryRepository = costCategoryRepository;
             _incomeCategoryRepository = incomeCategoryrepository;
+            _transactionService = transactionService;
             _dbContext = dbContext;
         }
 
@@ -116,20 +119,20 @@ namespace BusinessLayer.Services
             return incomeCategoryDTOs.Union(costCategoryDTOs);
         }
 
-        public async Task<IEnumerable<TransactionCategoryDTO>> GetCategoriesList(int userId, TransactionType transactionType)
+        public async Task<TransactionCategoryDTO> GetCategory(int userId, int transactionId, TransactionType transactionType)
         {
             if (transactionType == TransactionType.Cost)
             {
                 var CategoryDTOs = (await _costCategoryRepository.Query()
-                .Where(u => u.UserId == userId).ToListAsync())
-                .Select(x => TransactionMapper.MapToDTO(x));
+                        .FirstOrDefaultAsync(u => u.UserId == userId && u.CostCategoryId == transactionId))
+                ?.MapToDTO();
                 return CategoryDTOs;
             }
             else
             {
                 var CategoryDTOs = (await _incomeCategoryRepository.Query()
-                .Where(u => u.UserId == userId).ToListAsync())
-                .Select(x => TransactionMapper.MapToDTO(x));
+                .FirstOrDefaultAsync(u => u.UserId == userId && u.IncomeCategoryId == transactionId))
+                ?.MapToDTO();
                 return CategoryDTOs;
             }
         }
@@ -180,6 +183,61 @@ namespace BusinessLayer.Services
             await _dbContext.SaveChangesAsync();
 
             return ServiceResult.Success();
+        }
+
+        public async Task<IEnumerable<TransactionCategoryHistory>> GetTransactionCategoryHistories(UserDTO user)
+        {
+            var categoryList = (
+                await GetAllCategoriesList(user.UserId)
+                ).Select(x => new TransactionCategoryHistory(x))
+                .ToList();
+
+            var transactions = await _transactionService.GetAllTransactionList(user.UserId);
+
+            return ProcessHistory(categoryList, transactions);
+        }
+
+        private IEnumerable<TransactionCategoryHistory> ProcessHistory(IEnumerable<TransactionCategoryHistory> categoryList, IEnumerable<TransactionDTO> transactions)
+        {
+            var now = DateTime.Now;
+            var currentMonthRange = (start: FirstDayOfMonth(now), end: LastDayOfMonth(now));
+
+            var range = Enumerable.Range(0, 3).Select(i =>
+                (start: currentMonthRange.start.AddMonths(-i), end: currentMonthRange.end.AddMonths(-i))
+            );
+
+            foreach (var category in categoryList)
+            {
+                var history = new Collection<CategoryMonth>();
+                foreach (var month in range)
+                {
+                    var monthTransactions = transactions
+                        .Where(x => x.Category.Equals(category) && x.Date >= month.start && x.Date < month.end);
+
+                    history.Add(new CategoryMonth
+                    {
+                        MonthYear = month.start,
+                        MonthLimit = category.MonthLimit,
+                        Amount = monthTransactions.Sum(x => x.Amount)
+                    });
+                }
+
+                category.CategoryHistory = history.OrderBy(x => x.MonthYear);
+            }
+
+            return categoryList;
+        }
+
+        private DateTime FirstDayOfMonth(DateTime value)
+        {
+            return new DateTime(value.Year, value.Month, 1);
+        }
+
+        private DateTime LastDayOfMonth(DateTime value)
+        {
+            return FirstDayOfMonth(value)
+                .AddMonths(1)
+                .AddMinutes(-1);
         }
     }
 }

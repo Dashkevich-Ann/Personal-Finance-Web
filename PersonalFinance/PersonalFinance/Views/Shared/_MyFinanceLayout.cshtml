@@ -8,7 +8,7 @@
     <div class="category-wrap col-md-3">
         <ul>
             <li><a class="@Html.IsActive("MyFinance", "Index")" asp-action="Index" asp-controller="MyFinance">Costs and incomes</a></li>
-            <li><a href="">Categories</a></li>
+            <li><a class="@Html.IsActive("TransactionCategories", "Index")" asp-action="Index" asp-controller="TransactionCategories">Categories</a></li>
             <li><a href="">Statistics</a></li>
             <li><a href="">Reports</a></li>
         </ul>

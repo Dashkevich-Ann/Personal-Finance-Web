@@ -3,56 +3,65 @@
         $(document).ready(initGrid);
 
         function initGrid() {
-            loadData(setUpGrid);
+            loadData(addColumns);
 
-            function setUpGrid(data) {
+            function setUpGrid(data, columns) {
+                var gridColumns = [
+                    { data: 'name' },
+                    { data: 'limitDisplayValue' },
+                    { data: 'type' },
+                    { data: 'categoryId' },
+                ];
 
-                const dataTable = $('#transactionTable').DataTable({
+                var monthColumns = columns.map(c => ({ data: c + '.amount' }));
+
+                gridColumns = gridColumns.concat(monthColumns);
+
+                const groupColumn = 2;
+
+                const dataTable = $('#categoryTable').DataTable({
                     data: data,
                     paging: false,
                     scrollY: 400,
                     info: false,
                     searching: true,
-                    columns: [
-                        { data: 'date' },
-                        { data: 'category.type' },
-                        { data: 'category.name' },
-                        { data: 'comment'},
-                        { data: 'displayAmount' },
-                        { data: 'transactionId' },
-                        { data: 'amount'},
-                    ],
-                    columnDefs: [{
-                        targets: 0,
-                        render: $.fn.dataTable.render.moment('MMMM Do YYYY')
-                    },
+                    orderFixed: [2, 'asc'],
+                    order: [[groupColumn, 'asc']],
+                    columns: gridColumns,
+                    columnDefs: [
                         {
-                            targets: 1,
-                            render: function (data) {
-                                return data == 0 ? 'Income' : 'Cost';
-                            }
-                        },
-                        {
-                            targets: [5, 6],
+                            targets: [2, 3],
                             visible: false,
                             searchable: false,
+
+                        },
+                        {
+                            targets: [4,5,6],
+                            createdCell: function (td, cellData, rowData, row, col) {
+                                if (rowData.monthLimit && rowData.monthLimit < cellData) {
+                                    $(td).addClass('text-danger');
+                                    $(td).addClass('font-weight-bold');
+                                }
+                            }
                         }
                     ],
                     buttons: [{
                         extend: 'pdfHtml5',
-                        title: 'My transactions',
-                        filename: 'My transactions',
+                        title: 'My categories',
+                        filename: 'My categories',
                         text: "Export to PDF",
+                        className: 'btn-secondary',
                         pageSize: 'LEGAL',
                         exportOptions: {
                             columns: ':visible',
                             stripHtml: true,
                         },
+                        
                     },
                         {
                             extend: 'csv',
-                            title: 'My transactions',
-                            filename: 'My transactions',
+                            title: 'My categories',
+                            filename: 'My categories',
                             text: "Export to CSV",
                             className: 'btn-secondary',
                             exportOptions: {
@@ -60,12 +69,29 @@
                                 stripHtml: true,
                             },
                         }],
-                    footerCallback: footer
+                    drawCallback: function (settings) {
+                        var api = this.api();
+                        var rows = api.rows().nodes();
+                        var last = null;
+
+                        api.column(groupColumn).data().each(function (group, i) {
+                            if (last !== group) {
+                                $(rows).eq(i).before(
+                                    '<tr class="group"><td colspan="5">' + (group == 0 ? 'Incomes' : 'Costs') + '</td></tr>'
+                                );
+
+                                last = group;
+                            }
+                        });
+                    }
                 })
 
-                dataTable.buttons().container().removeClass('btn-group flex-wrap').appendTo('#transactionBtnGroup');
+                dataTable.buttons().container().removeClass('btn-group flex-wrap').appendTo('#categoryBtnGroup');
 
-                $('#transactionTable tbody').on('click', 'tr', function () {
+                $('#categoryTable tbody').on('click', 'tr', function () {
+                    if ($(this).hasClass('group'))
+                        return;
+
                     if ($(this).hasClass('selected')) {
                         $(this).removeClass('selected');
                     }
@@ -78,11 +104,10 @@
                 setDeleteAction(dataTable);
                 setCreateAction(dataTable);
                 setEditAction(dataTable);
-
             }
 
             function setCreateAction(dataTable) {
-                const modalId = '#new-transaction-modal';
+                const modalId = '#new-category-modal';
 
                 $('#add-button').click(function (e) {
                         $(modalId).modal('show')
@@ -90,14 +115,14 @@
                 });
 
                 function getCreateNewView() {
-                    var url = '/finances/transaction/create';
+                    var url = '/finances/categories/create';
 
                     $.get(url).done(function (data) {
                         $(modalId).find('.modal-dialog').html(data);
                     });
                 }
 
-                $(document).on("click", "#submitCreate", function (e) {
+                $(document).on("click", "#submit-create-category", function (e) {
                     formSubmit(e);
                 })
 
@@ -128,14 +153,14 @@
                             }, 50)
                         },
                         error: function () {
-                            alert('Failed to update transaction');
+                            alert('Failed to create category');
                         }
                     })
                 }
             }
 
             function setEditAction(dataTable) {
-                const modalId = '#edit-transaction-modal';
+                const modalId = '#edit-category-modal';
 
                 $('#edit-button').click(function(e) {
                     var transactionRow = dataTable.row('.selected');
@@ -150,14 +175,14 @@
                 })
 
                 function getEditView(data) {
-                    var url = `/finances/transaction/${data.transactionId}/type/${data.category.type}/edit`;
+                    var url = `/finances/categories/${data.categoryId}/type/${data.type}/edit`;
 
                     $.get(url).done(function (data) {
                         $(modalId).find(".modal-dialog").html(data);
                     });
                 }
 
-                $(document).on("click", "#submitEdit", function (e) {
+                $(document).on("click", "#submit-edit-category", function (e) {
                     formSubmit(e);
                 })
 
@@ -198,7 +223,7 @@
             }
 
             function setDeleteAction(dataTable) {
-                const modalId = '#confirm-removal-modal';
+                const modalId = '#remove-category-modal';
 
                 $('#delete-button').click(function (e) {
                     var transactionRow = dataTable.row('.selected');
@@ -212,12 +237,12 @@
                     }
                 });
 
-                $(document).on("click", "#trDeleteConfirm", function (e) {
+                $(document).on("click", "#categoryDeleteConfirm", function (e) {
                     submitRemove(e);
                 })
 
                 function getDeleteConfirm(data) {
-                    var url = `/finances/transaction/${data.transactionId}/type/${data.category.type}/delete`;
+                    var url = `/finances/categories/${data.categoryId}/type/${data.type}/delete`;
 
                     $.get(url).done(function (data) {
                         $(modalId).find(".modal-dialog").html(data);
@@ -226,75 +251,63 @@
 
                 function submitRemove(e) {
                     const elm = e.target;
-                    var trId = $(elm).data('id');
-                    var type = $(elm).data('type');
+                    var url = $(elm).data('url');
                     $.ajax({
                         type: 'DELETE',
-                        url: `/api/transaction/${trId}/type/${type}`,
+                        url: url,
                         success: function (result) {
                             setTimeout(() => {
-                                if (result.isSuccess) {
+                                if (result == "Success") {
                                     $(modalId).modal('hide')
                                     dataTable.row('.selected').remove().draw();
                                 }
                                 else {
-                                    alert('Failed to detele transaction');
+                                    alert('Failed to delete category');
                                 }
                             }, 50)
                         },
                         error: function () {
-                            alert('Failed to detele transaction');
+                            alert('Failed to delete category');
                         }
                     })
                 }
             }
 
             function loadData(callback) {
-                const transactionUrl = '/api/transaction/';
-                $.get(transactionUrl).done(callback);
+                const transactionUrl = '/api/transaction/categories/histories';
+                $.get(transactionUrl).done(mapData);
 
+                function mapData(data) {
+                    var result = data.map(function(d) {
+                        var r = Object.assign(d);
+
+                        r.categoryHistory.forEach(function(c) {
+                            r[moment(c.monthYear).format('MMM YYYY')] = c;
+                        });
+
+                        return r;
+
+                    });
+
+                    callback(result);
+                }
             }
 
-            function footer (row, data, start, end, display) {
-                var api = this.api();
+            function addColumns(result) {
+                var columns = result[0].categoryHistory.map(function(c) {
+                    return moment(c.monthYear).format('MMM YYYY');
+                });
 
-                // Remove the formatting to get integer data for summation
-                var intVal = function (i) {
-                    return typeof i === 'string' ?
-                        i.replace(/[\$,]/g, '') * 1 :
-                        typeof i === 'number' ?
-                            i : 0;
-                };
+                var html = columns.reduce((p, v) => p + `<th scope="col">${v}</th>`, "");
 
-                // Total over this page
-                total = api
-                    .column(4, { search: 'applied' })
-                    .data()
-                    .reduce(function (a, b) {
-                        return intVal(a) + intVal(b);
-                    }, 0);
+                $('#categoryTable > thead > tr').append(html);
 
-                countEntires = api
-                    .column(0)
-                    .data().length;
-
-                countShown= api
-                    .column(0, { search: 'applied' })
-                    .data().length;
-
-                // Update footer
-                $(api.column(4).footer()).html(
-                    '$' + total + ' total'
-                );
-
-                $(api.column(0).footer()).html(
-                    'Shown ' + countShown + ' from ' + countEntires
-                );
+                setUpGrid(result, columns);
             }
         }
     }
 
     $(function () {
-        Index();
+        new Index();
     });
 }(jQuery));

@@ -1,23 +1,23 @@
-﻿@model BusinessLayer.Models.TransactionDTO
+﻿@model BusinessLayer.Models.TransactionCategoryDTO
 @{
-    var transactionId = Model.TransactionId;
-    var trType = (int)Model.Category.Type;
+    var categoryId = Model.CategoryId;
+    var type = (int)Model.Type;
 }
 <div class="modal-content">
 
     <!--Modal Header Start-->
     <div class="modal-header">
-        <h4 class="modal-title">Delete Transaction</h4>
+        <h4 class="modal-title">Delete Category</h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
     </div>
     <!--Modal Header End-->
     <div class="modal-body form-horizontal">
-        <h3>Are you sure to delete transaction for @Model.DisplayAmount for @Model.Category.Name</h3>
+        <h3>Are you sure to delete category @Model.Name</h3>
     </div>
     <!--Modal Footer Start-->
     <div class="modal-footer">
         <button data-dismiss="modal" id="cancel" class="btn btn-default" data-dismiss="modal" type="button">Cancel</button>
-        <button class="btn btn-success relative" id="trDeleteConfirm" data-id="@transactionId" data-type="@trType">
+        <button class="btn btn-success relative" id="categoryDeleteConfirm" data-url="@string.Format("/finances/categories/{0}/type/{1}/delete", categoryId, (int)type)">
             OK
         </button>
     </div>

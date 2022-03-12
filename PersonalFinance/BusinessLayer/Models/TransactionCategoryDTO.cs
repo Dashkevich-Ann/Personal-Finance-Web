@@ -12,6 +12,22 @@ namespace BusinessLayer.Models
         public decimal? MonthLimit { get; set; }
         public TransactionType Type { get; set; }
         public string LimitDisplayValue => Type == TransactionType.Income ? "-" : MonthLimit?.ToString("C") ?? "-";
+
+        public override bool Equals(object obj)
+        {
+            var other = obj as TransactionCategoryDTO;
+
+            return other != null
+                   && other.UserId == UserId
+                   && other.CategoryId == CategoryId
+                   && other.Type == Type;
+
+        }
+
+        public override int GetHashCode()
+        {
+            return CategoryId + UserId + (int)Type + (int)(MonthLimit ?? 0);
+        }
     }
 
     public enum TransactionType

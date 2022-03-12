@@ -1945,12 +1945,27 @@ a.btn.btn-primary {
 }
 
 div.transaction-grid > .btn-toolbar > button {
-	margin-right: 10px;
+	margin-right: 5px;
 }
 
 table.dataTable > tbody > tr.selected {
-	background: #d259595e;
+	background: RGBA(210, 89, 94, 0.38);
 }
+
+table.dataTable > tbody > tr.selected.group,
+table.dataTable > tbody > tr.group {
+    background: #dfddd9;
+}
+
+table.dataTable > tbody > tr.group > td {
+	padding: 0.25rem;
+	font-weight: 500;
+}
+
+	select.form-control {
+		height: auto;
+		padding: 8px;
+	}
 
 
 

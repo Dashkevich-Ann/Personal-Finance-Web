@@ -1,0 +1,56 @@
+﻿@using BusinessLayer.Models
+@model CategoryViewModel
+
+
+<div class="modal-content">
+
+  <!--Modal Header Start-->
+  <div class="modal-header">
+    <h4 class="modal-title">Edit Category</h4>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+  </div>
+  <!--Modal Header End-->
+
+  <form id="transactionForm" asp-action="Edit" 
+        asp-controller="TransactionCategories" 
+        asp-route-categoryId="@Model.CategoryId"
+        asp-route-transactionType="@Model.Type"
+        method="post" enctype="multipart/form-data">
+
+    @Html.AntiForgeryToken()
+
+    <div class="modal-body form-horizontal">
+      <div class="validation" asp-validation-summary="ModelOnly"></div>
+      <input type="hidden" asp-for="@Model.CategoryId" />
+      <input type="hidden" asp-for="@Model.Type"/>
+
+      <div class="form-group row">
+        <label class="col-sm-12 col-form-label">Name</label>
+        <div class="col-sm-10">
+          <input asp-for="@Model.Name" placeholder="Category name.." type="text" class="form-control" />
+          <span asp-validation-for="Name"></span>
+        </div>
+      </div>
+
+      @if (Model.Type == TransactionType.Cost)
+      {
+        <div class="form-group row" id="month-limit">
+          <label class="col-sm-12 col-form-label">Month Limit</label>
+          <div class="col-sm-10">
+            <input asp-for="@Model.MonthLimit" type="number" placeholder="$0" class="form-control"/>
+            <span asp-validation-for="MonthLimit"></span>
+          </div>
+        </div>
+      }
+
+    </div>
+    <!--Modal Footer Start-->
+    <div class="modal-footer">
+      <button data-dismiss="modal" id="cancel" class="btn btn-default" data-dismiss="modal" type="button">Cancel</button>
+      <button class="btn btn-success relative" id="submit-edit-category">
+        Submit
+      </button>
+    </div>
+    <!--Modal Footer End-->
+  </form>
+</div>

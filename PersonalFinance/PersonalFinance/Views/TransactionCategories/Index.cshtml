@@ -1,0 +1,34 @@
+﻿@{
+  Layout = "_MyFinanceLayout";
+}
+
+<div class="row">
+  <div class="col-md-12 transaction-grid">
+    <table class="table" id="categoryTable">
+      <thead>
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Month Limit</th>
+        <th scope="col">Type</th>
+        <th scope="col">Id</th>
+      </tr>
+      </thead>
+      <tfoot>
+      </tfoot>
+    </table>
+    <div class="btn-toolbar justify-content-start" id="categoryBtnGroup">
+      <button class="btn btn-success" id="add-button" data-modal="new-category-modal">Add</button>
+      <button class="btn btn-primary" id="edit-button" data-modal="edit-category-modal">Edit</button>
+      <button class="btn btn-danger" id="delete-button" data-modal="remove-category-modal">Delete</button>
+    </div>
+  </div>
+</div>
+
+<partial name="_ModalPartial" model="@string.Format("new-category-modal")" />
+<partial name="_ModalPartial" model="@string.Format("edit-category-modal")" />
+<partial name="_ModalPartial" model="@string.Format("remove-category-modal")" />
+
+
+@section Scripts{
+  <script src="~/js/categoryGrid.js" asp-append-version="true"></script>
+}

@@ -186,7 +186,7 @@ namespace BusinessLayer.Services
             {
                 var cost = await _incomeRepository.Query()
                         .Include(c => c.IncomeCategory)
-                        .FirstOrDefaultAsync(c => c.IncomeCategoryId == transactionId && c.UserId == userId);
+                        .FirstOrDefaultAsync(c => c.IncomeId == transactionId && c.UserId == userId);
 
                 if (cost == null)
                     return ServiceResult<TransactionDTO>.Error($"Income with ID {transactionId} was not found");

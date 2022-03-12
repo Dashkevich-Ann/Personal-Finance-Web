@@ -18,6 +18,7 @@ namespace PersonalFinance.Models
         public DateTime? Date { get; set; }
 
         [Required]
+        [Range(0.0, Double.MaxValue)]
         public decimal Amount { get; set; }
 
         public string Comment { get; set; }

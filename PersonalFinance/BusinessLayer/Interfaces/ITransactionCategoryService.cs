@@ -9,9 +9,11 @@ namespace BusinessLayer.Interfaces
     public interface ITransactionCategoryService
     {
         Task<IEnumerable<TransactionCategoryDTO>> GetAllCategoriesList(int userId);
-        Task<IEnumerable<TransactionCategoryDTO>> GetCategoriesList(int userId, TransactionType transactionType);
+        Task<TransactionCategoryDTO> GetCategory(int userId, int transactionId, TransactionType transactionType);
         Task<ServiceResult> CreateCategory(TransactionCategoryDTO categoryDTO);
         Task<ServiceResult> UpdateCategory(TransactionCategoryDTO categoryDTO, int userId, TransactionType transactionType);
         Task<ServiceResult> DeleteCategory(TransactionCategoryDTO categoryDTO, int userId, TransactionType transactionType);
+        Task<IEnumerable<TransactionCategoryHistory>> GetTransactionCategoryHistories(UserDTO user);
+
     }
 }
