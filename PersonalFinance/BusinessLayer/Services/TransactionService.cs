@@ -194,6 +194,18 @@ namespace BusinessLayer.Services
                 return ServiceResult.Success(cost.MapToDTO());
 
             }
+
+        }
+
+        public async Task<IEnumerable<DateTime>> GetTransactionHistogram(UserDTO user)
+        {
+            var costDatesQuery = _costRepository.Query().Where(x => x.UserId == user.UserId).Select(x => x.Date);
+            var incomeDatesQuery = _incomeRepository.Query().Where(x => x.UserId == user.UserId).Select(x => x.Date);
+
+            return (await costDatesQuery.Union(incomeDatesQuery).ToListAsync()).Select(x => 
+                new DateTime(x.Year, x.Month, 1)
+                ).Distinct();
+
         }
     }
 }

@@ -294,7 +294,5 @@
         }
     }
 
-    $(function () {
-        Index();
-    });
+    $(Index);
 }(jQuery));

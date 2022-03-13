@@ -274,7 +274,7 @@
             }
 
             function loadData(callback) {
-                const transactionUrl = '/api/transaction/categories/histories';
+                const transactionUrl = '/api/transaction/categories/histories/3';
                 $.get(transactionUrl).done(mapData);
 
                 function mapData(data) {
@@ -306,8 +306,5 @@
             }
         }
     }
-
-    $(function () {
-        new Index();
-    });
+    $(Index);
 }(jQuery));

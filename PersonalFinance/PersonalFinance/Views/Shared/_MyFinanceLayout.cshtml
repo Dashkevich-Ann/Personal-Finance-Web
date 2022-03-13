@@ -5,12 +5,11 @@
     Layout = "_Layout";
 }
 <div class="row">
-    <div class="category-wrap col-md-3">
+    <div class="category-wrap col-md-3 col-sm-3">
         <ul>
             <li><a class="@Html.IsActive("MyFinance", "Index")" asp-action="Index" asp-controller="MyFinance">Costs and incomes</a></li>
             <li><a class="@Html.IsActive("TransactionCategories", "Index")" asp-action="Index" asp-controller="TransactionCategories">Categories</a></li>
-            <li><a href="">Statistics</a></li>
-            <li><a href="">Reports</a></li>
+            <li><a class="@Html.IsActive("Statistic", "Index")"  asp-action="Index" asp-controller="Statistic">Statistics</a></li>
         </ul>
     </div>
     <div class="col-md-9">

@@ -24,12 +24,21 @@ namespace PersonalFinance.Controllers
         }
 
         [HttpGet]
-        [Route("histories")]
-        public async Task<IEnumerable<TransactionCategoryHistory>> GetCategoryHistories()
+        [Route("histories/{index:int}")]
+        public async Task<IEnumerable<TransactionCategoryHistory>> GetCategoryHistories(int index = 0)
         {
             var user = await _authService.GetLoggedInUser(User);
 
-            return await _transactionCategoryService.GetTransactionCategoryHistories(user);
+            return await _transactionCategoryService.GetTransactionCategoryHistories(user, new Range(0, index));
+        }
+
+        [HttpGet]
+        [Route("histories/month/{month:datetime}")]
+        public async Task<IEnumerable<TransactionCategoryHistory>> GetCategoryHistoriesForMonth(DateTime month)
+        {
+            var user = await _authService.GetLoggedInUser(User);
+
+            return await _transactionCategoryService.GetTransactionCategoryHistories(user, month);
         }
 
     }

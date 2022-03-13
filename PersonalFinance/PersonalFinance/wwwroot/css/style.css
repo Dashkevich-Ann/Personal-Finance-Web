@@ -1962,10 +1962,29 @@ table.dataTable > tbody > tr.group > td {
 	font-weight: 500;
 }
 
-	select.form-control {
-		height: auto;
-		padding: 8px;
-	}
+select.form-control {
+	height: auto;
+	padding: 4px;
+}
 
+div.statistic-grid > #six-month-chart {
+    width: 100%;
+    max-height: 400px;
+}
+
+div.statistic-grid > #costs-chart {
+	width: 100%;
+	max-height: 400px;
+}
+
+
+div.statistic-grid > #incomes-chart {
+	width: 100%;
+	max-height: 400px;
+}
+
+.overflowVisible {
+    overflow: visible !important;
+}
 
 

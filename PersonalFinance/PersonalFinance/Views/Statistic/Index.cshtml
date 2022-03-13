@@ -1,0 +1,49 @@
+﻿@model ILookup<int, DateTime>
+@{
+  Layout = "_MyFinanceLayout";
+  var now = DateTime.Now;
+  var currentMonth = new DateTime(now.Year, now.Month, 1);
+}
+
+<div class="row" id="statistic">
+  <div class="col-md-12 statistic-grid">
+    <label class="col-sm-12 col-form-label text-center">Costs & Incomes</label>
+    <canvas id="six-month-chart"></canvas>
+  </div>
+  <div class="col-md-12 ignore-pdf"><hr/></div>
+  <div class="col-md-12 mt-1 mb-1 ignore-pdf">
+    <div class="form-group row">
+      <label class="col-sm-12 col-form-label">Select month</label>
+      <div class="col-sm-4">
+        <select class="form-control form-control-sm" id="month-select">
+          @foreach (var group in Model)
+          {
+            <optgroup label="@group.Key">
+              @foreach (var month in group)
+              {
+                <option value="@month.ToString("MM-dd-yyyy")"
+                        selected="@(month == currentMonth)">@month.ToString("MMMM")</option>
+              }
+            </optgroup>
+          }
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-12 statistic-grid">
+    <label class="col-sm-12 col-form-label text-center">Costs</label>
+    <canvas id="costs-chart"></canvas>
+  </div>
+  <div class="col-md-12 statistic-grid mt-1">
+    <label class="col-sm-12 col-form-label text-center">Incomes</label>
+    <canvas id="incomes-chart"></canvas>
+  </div>
+  <div class="col-md-3 mt-1 ignore-pdf">
+    <button class="btn btn-secondary" id="save-pdf-bth">Save as PDF</button>
+  </div>
+</div>
+
+
+@section Scripts{
+  <script src="~/js/statistic.js" asp-append-version="true"></script>
+}

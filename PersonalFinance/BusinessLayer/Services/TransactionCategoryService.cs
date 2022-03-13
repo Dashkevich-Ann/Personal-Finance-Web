@@ -185,7 +185,7 @@ namespace BusinessLayer.Services
             return ServiceResult.Success();
         }
 
-        public async Task<IEnumerable<TransactionCategoryHistory>> GetTransactionCategoryHistories(UserDTO user)
+        public async Task<IEnumerable<TransactionCategoryHistory>> GetTransactionCategoryHistories(UserDTO user, Range monthRange)
         {
             var categoryList = (
                 await GetAllCategoriesList(user.UserId)
@@ -193,19 +193,38 @@ namespace BusinessLayer.Services
                 .ToList();
 
             var transactions = await _transactionService.GetAllTransactionList(user.UserId);
-
-            return ProcessHistory(categoryList, transactions);
-        }
-
-        private IEnumerable<TransactionCategoryHistory> ProcessHistory(IEnumerable<TransactionCategoryHistory> categoryList, IEnumerable<TransactionDTO> transactions)
-        {
             var now = DateTime.Now;
             var currentMonthRange = (start: FirstDayOfMonth(now), end: LastDayOfMonth(now));
 
-            var range = Enumerable.Range(0, 3).Select(i =>
+            var range = Enumerable.Range(monthRange.Start.Value, monthRange.End.Value).Select(i =>
                 (start: currentMonthRange.start.AddMonths(-i), end: currentMonthRange.end.AddMonths(-i))
             );
 
+            return ProcessHistory(categoryList, transactions, range);
+        }
+
+        public async Task<IEnumerable<TransactionCategoryHistory>> GetTransactionCategoryHistories(UserDTO user, DateTime month)
+        {
+            var categoryList = (
+                    await GetAllCategoriesList(user.UserId)
+                ).Select(x => new TransactionCategoryHistory(x))
+                .ToList();
+
+            var transactions = await _transactionService.GetAllTransactionList(user.UserId);
+
+            var monthRange = (start: FirstDayOfMonth(month), end: LastDayOfMonth(month));
+            var monthRangeList = new List<(DateTime start, DateTime end)>
+            {
+                monthRange
+            };
+
+            return ProcessHistory(categoryList, transactions, monthRangeList);
+        }
+
+        private IEnumerable<TransactionCategoryHistory> ProcessHistory(
+            IEnumerable<TransactionCategoryHistory> categoryList, IEnumerable<TransactionDTO> transactions,
+            IEnumerable<(DateTime start, DateTime end)> range)
+        {
             foreach (var category in categoryList)
             {
                 var history = new Collection<CategoryMonth>();

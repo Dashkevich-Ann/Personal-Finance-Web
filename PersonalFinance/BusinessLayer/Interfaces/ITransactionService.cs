@@ -14,5 +14,6 @@ namespace BusinessLayer.Interfaces
         Task<ServiceResult> CreateTransaction(TransactionDTO transactionDTO);
         Task<ServiceResult> UpdateTransaction(TransactionDTO transactionDTO, int userId, TransactionType transactionType);
         Task<ServiceResult> DeleteTransaction(int transactionId, int userId, TransactionType transactionType);
+        Task<IEnumerable<DateTime>> GetTransactionHistogram(UserDTO user);
     }
 }
