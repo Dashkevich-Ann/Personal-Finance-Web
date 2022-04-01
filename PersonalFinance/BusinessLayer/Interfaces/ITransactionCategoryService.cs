@@ -15,6 +15,5 @@ namespace BusinessLayer.Interfaces
         Task<ServiceResult> DeleteCategory(TransactionCategoryDTO categoryDTO, int userId, TransactionType transactionType);
         Task<IEnumerable<TransactionCategoryHistory>> GetTransactionCategoryHistories(UserDTO user, Range monthRange);
         Task<IEnumerable<TransactionCategoryHistory>> GetTransactionCategoryHistories(UserDTO user, DateTime month);
-
     }
 }

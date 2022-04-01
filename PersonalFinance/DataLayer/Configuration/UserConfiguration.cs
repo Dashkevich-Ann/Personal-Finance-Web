@@ -20,8 +20,6 @@ namespace DataLayer.Configuration
             builder.HasMany(b => b.Costs).WithOne(c => c.User).HasForeignKey(c => c.UserId);
             builder.HasMany(b => b.IncomeCategories).WithOne(i => i.User).HasForeignKey(i => i.UserId);
             builder.HasMany(b => b.CostCategories).WithOne(c => c.User).HasForeignKey(c => c.UserId);
-
-
         }
     }
 }

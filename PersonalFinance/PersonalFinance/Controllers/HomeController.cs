@@ -25,6 +25,18 @@ namespace PersonalFinance.Controllers
             return View();
         }
 
+        [Route("~/About")]
+        public IActionResult About()
+        {
+            return View();
+        }
+
+        [Route("~/Contactus")]
+        public IActionResult Contactus()
+        {
+            return View();
+        }
+
         public IActionResult Privacy()
         {
             return View();

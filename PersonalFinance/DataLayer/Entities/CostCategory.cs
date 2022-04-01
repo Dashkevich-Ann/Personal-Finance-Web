@@ -13,6 +13,5 @@ namespace DataLayer.Entities
         public int UserId { get; set; } //User's ID who creates category of cost
         public User User { get; set; } 
         public virtual ICollection<Cost> Costs { get; set; } //Collection of costs which belongs to the category
-
     }
 }

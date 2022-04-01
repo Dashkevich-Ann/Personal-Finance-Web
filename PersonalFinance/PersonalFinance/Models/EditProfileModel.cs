@@ -22,9 +22,9 @@ namespace PersonalFinance.Models
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        [Required(ErrorMessage = "No password specified")]
-        [DataType(DataType.Password)]
-        public string ConfirmPassword { get; set; }
+        //[Required(ErrorMessage = "No password specified")]
+        //[DataType(DataType.Password)]
+        //public string ConfirmPassword { get; set; }
 
         [BindProperty, DataType(DataType.Date), DisplayFormat(ApplyFormatInEditMode = true)]
         public DateTime? DateOfBirth { get; set; }

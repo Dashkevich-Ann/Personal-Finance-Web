@@ -11,7 +11,6 @@ namespace BusinessLayer.Models
 
         public IEnumerable<string> Errors { get; set; }
 
-
         public static ServiceResult Success() => new ServiceResult();
 
         public static ServiceResult Error(params string[] errors) => new ServiceResult { Errors = errors };

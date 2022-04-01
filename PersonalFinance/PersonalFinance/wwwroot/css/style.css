@@ -1987,4 +1987,13 @@ div.statistic-grid > #incomes-chart {
     overflow: visible !important;
 }
 
+ul.bulletedul > li {
+	margin: 0px 40px;
+	padding: 0px;
+	list-style: disc;
+}
 
+#moreText {
+	/* Display nothing for the element */
+	display: none;
+}

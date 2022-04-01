@@ -21,8 +21,8 @@
                                     <a class="@Html.IsActive("MyFinance", "Index", "nav-link")" asp-controller="MyFinance" asp-action="Index">My finance</a>
                                 </li>
                             }
-                            <li> <a href="aboutus.html">About</a> </li>
-                            <li> <a href="contact.html">Contact us</a> </li>
+                            <li> <a asp-controller="Home" asp-action="About">About</a> </li>
+                            <li> <a asp-controller="Home" asp-action="Contactus">Contact us</a> </li>
                             @if (User.IsInRole("Admin"))
                             {
                                 <li>

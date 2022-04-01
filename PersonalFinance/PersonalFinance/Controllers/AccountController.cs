@@ -140,7 +140,8 @@ namespace PersonalFinance.Controllers
                 LastName = user.LastName,
                 Email = user.Email,
                 DateOfBirth = user.DateOfBirth,
-                Login = user.Login           
+                Login = user.Login,
+                Password = user.Password
             };
             return View("EditProfile", model);
         }
@@ -162,7 +163,7 @@ namespace PersonalFinance.Controllers
                 return View("EditProfile", model);
             }
 
-            return Ok("Success");
+            return View("EditProfile", model);
         }
 
         private async Task<ServiceResult> UpdateUserProfile(EditProfileModel model)
