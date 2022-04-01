@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using BusinessLayer;
+using Microsoft.Extensions.Options;
 
 namespace PersonalFinance.Controllers
 {
@@ -18,11 +20,15 @@ namespace PersonalFinance.Controllers
     {
         private readonly IAuthService _authService;
         private readonly IUserService _userService;
+        private readonly IOptions<EmailConfiguration> _emailConfigOptions;
 
-        public AccountController(IAuthService authService, IUserService userService)
+        public AccountController(IAuthService authService,
+            IOptions<EmailConfiguration> emailConfigOptions,
+            IUserService userService)
         {
             _authService = authService;
             _userService = userService;
+            _emailConfigOptions = emailConfigOptions;
         }
 
         [HttpGet("login")]
@@ -111,7 +117,8 @@ namespace PersonalFinance.Controllers
                 Email = model.Email,
                 Login = model.Login,
                 Password = model.Password,
-                DateOfBirth = model.DateOfBirth
+                DateOfBirth = model.DateOfBirth,
+               
             };
 
             var createUser = await _userService.CreateUser(user);
@@ -165,6 +172,34 @@ namespace PersonalFinance.Controllers
 
             return View("EditProfile", model);
         }
+
+        [HttpGet]
+        [Route("restore")]
+        public async Task<IActionResult> RestorePassword()
+        {
+            var model = new PasswordRestoreModel();
+            return View("RestorePassword", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("restore")]
+        public async Task<IActionResult> RestorePassword(PasswordRestoreModel model)
+        {
+            if (!ModelState.IsValid)
+                return View("RestorePassword", model);
+
+            var sendEmailResult = await _userService.SendRestorePasswordEmail(model.Email);
+
+            if (!sendEmailResult.IsSuccess)
+            {
+                ModelState.AddModelError("", sendEmailResult.Errors.First());
+                return View("RestorePassword", model);
+            }
+
+            return View("RestorePasswordConfim");
+        }
+
 
         private async Task<ServiceResult> UpdateUserProfile(EditProfileModel model)
         {

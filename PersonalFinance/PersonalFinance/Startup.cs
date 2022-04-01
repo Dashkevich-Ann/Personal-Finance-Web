@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BusinessLayer;
 
 namespace PersonalFinance
 {
@@ -40,12 +41,16 @@ namespace PersonalFinance
             services.AddControllersWithViews();
 
             services.AddRazorPages();
+            services.AddOptions();
+
+            services.Configure<EmailConfiguration>(Configuration.GetSection("EmailConfig"));
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped(typeof(IAuthService), typeof(AuthService));
             services.AddScoped(typeof(IUserService), typeof(UserService));
             services.AddScoped(typeof(ITransactionService), typeof(TransactionService));
             services.AddScoped(typeof(ITransactionCategoryService), typeof(TransactionCategoryService));
+            services.AddScoped(typeof(IEmailMessageService), typeof(EmailMessageService));
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
                 {

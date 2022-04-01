@@ -17,12 +17,15 @@ namespace BusinessLayer.Services
         private readonly IRepository<User> _userRepository;
         private readonly IRepository<Role> _roleRepository;
         private readonly DbContext _dbContext;
+        private readonly IEmailMessageService _emailMessageService;
 
-        public UserService(IRepository<User> userRepository, IRepository<Role> roleRepository, DbContext dbContext)
+        public UserService(IRepository<User> userRepository, IRepository<Role> roleRepository, DbContext dbContext,
+            IEmailMessageService emailMessageService)
         {
             _userRepository = userRepository;
             _roleRepository = roleRepository;
             _dbContext = dbContext;
+            _emailMessageService = emailMessageService;
         }
 
         public async Task<IEnumerable<UserDTO>> GetUserDTOList()
@@ -137,6 +140,42 @@ namespace BusinessLayer.Services
         public async Task<IEnumerable<Role>> GetRoles()
         {
             return await _roleRepository.Query().ToListAsync();
+        }
+
+        public async Task<ServiceResult> SendRestorePasswordEmail(string userEmail)
+        {
+            try
+            {
+                var user = await _userRepository.Query()
+                    .Include(x => x.UserRoles)
+                    .ThenInclude(x => x.Role)
+                    .FirstOrDefaultAsync(x => x.Email == userEmail);
+
+                if (user == null)
+                    return ServiceResult.Error($"User with email {userEmail} was not found");
+
+                var userDto = user.MapToDTO();
+                var newPassword = NewPassword();
+
+                await _emailMessageService.SendTempPasswordEmail(userDto, newPassword);
+
+                user.Password = newPassword;
+                await _dbContext.SaveChangesAsync();
+
+                return ServiceResult.Success();
+            }
+            catch(Exception e)
+            {
+                return ServiceResult.Error("Unexpected error has occurred.\nPlease connect with administrator.");
+            }
+
+            string NewPassword()
+            {
+                var newPassword = Guid.NewGuid().ToString("N").ToLower()
+                    .Replace("1", "").Replace("o", "").Replace("0", "")
+                    .Substring(0, 10);
+                return newPassword;
+            }
         }
     }
 }

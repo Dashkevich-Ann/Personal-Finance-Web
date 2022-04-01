@@ -18,5 +18,6 @@ namespace BusinessLayer.Interfaces
         Task<ServiceResult> UpdateUserRole(UserDTO userDTO);
         Task DeleteUser(int userId);
         Task<IEnumerable<Role>> GetRoles();
+        Task<ServiceResult> SendRestorePasswordEmail(string userEmail);
     }
 }
